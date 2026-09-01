@@ -7,7 +7,7 @@ export default defineConfig({
   name: 'default',
   title: 'tour-cms',
 
-  projectId: '2kw18cdi',   // ✅ NEW PROJECT ID
+  projectId: 'lpgl0cqt',   // ✅ NEW PROJECT ID
   dataset: 'production',   // ✅ SAME DATASET
 
   plugins: [
