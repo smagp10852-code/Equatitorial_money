@@ -33,9 +33,9 @@ export default function CurrencyRow({
     <>
       {/* ROW CARD */}
 
-      <div className="bg-white rounded-2xl px-6 py-4 shadow-sm hover:shadow-md transition">
+      <div className="bg-white rounded-2xl px-4 sm:px-6 py-4 shadow-sm hover:shadow-md transition">
 
-        <div className="grid grid-cols-4 items-center">
+        <div className="flex flex-col gap-4 sm:grid sm:grid-cols-4 sm:items-center sm:gap-0">
 
           {/* CURRENCY INFO */}
 
@@ -43,7 +43,7 @@ export default function CurrencyRow({
 
             <img
               src={`https://flagcdn.com/w40/${currency.countryCode}.png`}
-              className="w-8 h-8 rounded-full"
+              className="w-8 h-8 rounded-full shrink-0"
               alt={currency.code}
             />
 
@@ -63,25 +63,39 @@ export default function CurrencyRow({
 
           </div>
 
-          {/* BUY RATE */}
+          {/* RATES — side-by-side pair on mobile (with labels since the
+              table header is hidden there), plain right-aligned columns
+              on desktop (contents so they slot into the 4-col grid) */}
 
-          <div className="text-right font-semibold text-green-600">
-            {formattedBuy}
-          </div>
+          <div className="grid grid-cols-2 gap-3 sm:contents">
 
-          {/* SELL RATE */}
+            {/* BUY RATE */}
 
-          <div className="text-right font-semibold text-red-600">
-            {formattedSell}
+            <div className="bg-gray-50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0 sm:text-right">
+              <p className="text-xs text-gray-400 sm:hidden">We Sell</p>
+              <p className="font-semibold text-green-600">
+                {formattedBuy}
+              </p>
+            </div>
+
+            {/* SELL RATE */}
+
+            <div className="bg-gray-50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0 sm:text-right">
+              <p className="text-xs text-gray-400 sm:hidden">We Buy</p>
+              <p className="font-semibold text-red-600">
+                {formattedSell}
+              </p>
+            </div>
+
           </div>
 
           {/* BUTTON */}
 
-          <div className="text-right">
+          <div className="sm:text-right">
 
             <button
               onClick={() => setOpenModal(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 sm:py-2 rounded-lg text-sm transition"
             >
               Connect
             </button>

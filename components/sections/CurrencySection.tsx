@@ -22,9 +22,7 @@ export default function CurrencySection() {
   const [amount] = useState(1);
 
   const [rates, setRates] = useState<Record<string, number>>({});
-  const [markups, setMarkups] = useState<
-    Record<string, { buyMarkup: number; sellMarkup: number }>
-  >({});
+  const [markups, setMarkups] = useState<Record<string, { buyMarkup: number; sellMarkup: number }>>({});
 
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
@@ -96,9 +94,9 @@ export default function CurrencySection() {
           Compare 100+ currencies in real time
         </p>
 
-        {/* TABLE HEADER */}
+        {/* TABLE HEADER — desktop only; mobile cards show their own labels */}
 
-        <div className="grid grid-cols-4 mt-8 text-sm text-gray-500 font-medium px-2">
+        <div className="hidden sm:grid grid-cols-4 mt-8 text-sm text-gray-500 font-medium px-2">
 
           <div>Currency</div>
           <div className="text-right">We Sell Rate</div>
@@ -180,7 +178,7 @@ export default function CurrencySection() {
 
         {/* ADD CURRENCY */}
 
-        <div className="mt-6 w-72">
+        <div className="mt-6 w-full sm:w-72">
 
           <Select
             options={options}

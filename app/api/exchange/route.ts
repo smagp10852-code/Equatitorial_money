@@ -125,7 +125,7 @@ ${address}
 `;
 
     const whatsappLink =
-      `https://wa.me/918981139988?text=${encodeURIComponent(message)}`;
+      `https://wa.me/918969457707?text=${encodeURIComponent(message)}`;
 
     return NextResponse.json({
       success: true,

@@ -41,17 +41,11 @@ export default function ExchangeModal({
     address: "",
   });
 
-  /* MOUNT GUARD — createPortal needs `document`, which doesn't
-     exist during SSR. Only render the portal after the component
-     has mounted in the browser. */
-
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  /* LOCK BACKGROUND SCROLL WHILE MODAL IS OPEN */
 
   useEffect(() => {
 
@@ -64,8 +58,6 @@ export default function ExchangeModal({
 
   }, []);
 
-  /* CLOSE ON ESC */
-
   useEffect(() => {
 
     function handleKey(e: KeyboardEvent) {
@@ -76,8 +68,6 @@ export default function ExchangeModal({
     return () => window.removeEventListener("keydown", handleKey);
 
   }, [onClose]);
-
-  /* BUY / SELL LOGIC */
 
   useEffect(() => {
 
@@ -93,8 +83,6 @@ export default function ExchangeModal({
 
   }, [transactionType, currency.code, buyRate, sellRate]);
 
-  /* FORM CHANGE */
-
   const handleChange = (e: any) => {
 
     setFormData({
@@ -104,12 +92,15 @@ export default function ExchangeModal({
 
   };
 
-  /* SUBMIT */
+  /* SUBMIT — opens WhatsApp tab immediately on click (before the
+     network call), so the browser never blocks it as a popup. */
 
   const handleSubmit = async (e: any) => {
 
     e.preventDefault();
     setSubmitting(true);
+
+    const whatsappWindow = window.open("", "_blank");
 
     try {
 
@@ -136,8 +127,17 @@ export default function ExchangeModal({
 
       if (data.success && data.whatsapp) {
 
-        window.open(data.whatsapp, "_blank");
+        if (whatsappWindow) {
+          whatsappWindow.location.href = data.whatsapp;
+        } else {
+          window.location.href = data.whatsapp;
+        }
+
         onClose();
+
+      } else {
+
+        whatsappWindow?.close();
 
       }
 
@@ -146,8 +146,6 @@ export default function ExchangeModal({
     }
 
   };
-
-  /* CURRENCY OPTIONS */
 
   const currencyOptions = currencyList
     .filter((c) => c.code !== "INR")
@@ -167,26 +165,15 @@ export default function ExchangeModal({
 
   const modal = (
 
-    /* OUTER OVERLAY — rendered via portal directly under <body>,
-       so it can NEVER be clipped/offset by any parent's
-       overflow-hidden, transform, or positioning. */
-
     <div
       className="fixed inset-0 bg-black/50 z-[9999] overflow-y-auto flex justify-center items-start sm:items-center px-4 py-8"
       onClick={onClose}
     >
 
-      {/* MODAL CARD
-          - max-h-[90vh] + overflow-y-auto so a long form scrolls
-            INSIDE the card instead of pushing content off-screen
-          - onClick stopPropagation so clicking inside doesn't close it */}
-
       <div
         onClick={(e) => e.stopPropagation()}
         className="bg-white rounded-2xl w-full max-w-lg relative flex flex-col max-h-[90vh] shadow-2xl"
       >
-
-        {/* STICKY HEADER */}
 
         <div className="flex items-center justify-between px-6 py-4 border-b sticky top-0 bg-white rounded-t-2xl z-10">
 
@@ -204,11 +191,7 @@ export default function ExchangeModal({
 
         </div>
 
-        {/* SCROLLABLE BODY */}
-
         <div className="overflow-y-auto px-6 py-5">
-
-          {/* BUY SELL */}
 
           <div className="flex gap-2 mb-4">
 
@@ -240,8 +223,6 @@ export default function ExchangeModal({
 
           <form id="exchange-form" onSubmit={handleSubmit} className="space-y-4">
 
-            {/* CITY */}
-
             <Select
               options={cities}
               placeholder="Select City"
@@ -253,8 +234,6 @@ export default function ExchangeModal({
               }}
             />
 
-            {/* NAME */}
-
             <input
               type="text"
               name="name"
@@ -263,8 +242,6 @@ export default function ExchangeModal({
               onChange={handleChange}
               className="w-full border rounded-lg p-3"
             />
-
-            {/* EMAIL */}
 
             <input
               type="email"
@@ -275,8 +252,6 @@ export default function ExchangeModal({
               className="w-full border rounded-lg p-3"
             />
 
-            {/* MOBILE */}
-
             <input
               type="tel"
               name="mobile"
@@ -286,11 +261,7 @@ export default function ExchangeModal({
               className="w-full border rounded-lg p-3"
             />
 
-            {/* CURRENCY SELECT */}
-
             <div className="grid grid-cols-2 gap-3">
-
-              {/* FROM */}
 
               <div>
 
@@ -318,8 +289,6 @@ export default function ExchangeModal({
                 )}
 
               </div>
-
-              {/* TO */}
 
               <div>
 
@@ -350,8 +319,6 @@ export default function ExchangeModal({
 
             </div>
 
-            {/* LIVE RATE */}
-
             <div className="bg-gray-100 p-3 rounded-lg text-sm">
 
               {transactionType === "buy"
@@ -359,8 +326,6 @@ export default function ExchangeModal({
                 : `Live Rate: 1 ${currency.code} = ₹${sellRate.toFixed(2)}`}
 
             </div>
-
-            {/* AMOUNT */}
 
             <input
               type="number"
@@ -370,8 +335,6 @@ export default function ExchangeModal({
               onChange={handleChange}
               className="w-full border rounded-lg p-3"
             />
-
-            {/* ADDRESS */}
 
             <textarea
               name="address"
@@ -385,8 +348,6 @@ export default function ExchangeModal({
           </form>
 
         </div>
-
-        {/* STICKY FOOTER — submit stays reachable even on tall forms */}
 
         <div className="px-6 py-4 border-t sticky bottom-0 bg-white rounded-b-2xl">
 
