@@ -14,6 +14,17 @@ import {
   Great_Vibes,
 } from "next/font/google";
 
+/* ================= FRESH SANITY DATA =================
+   Without this, Next.js statically builds pages/layout at
+   deploy time and bakes in whatever Sanity content existed
+   THEN. New content added in Studio after that (Hero Slides,
+   Country/State lists in Navbar, etc.) won't show up until
+   the next deploy. This makes the whole app re-check Sanity
+   every 60s instead, without needing a manual redeploy each
+   time content changes. */
+
+export const revalidate = 60;
+
 /* ================= FONTS ================= */
 
 const playfair = Playfair_Display({
