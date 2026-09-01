@@ -47,9 +47,9 @@ const greatVibes = Great_Vibes({
 /* ================= SEO ================= */
 
 export const metadata: Metadata = {
-  title: "TourX - Luxury Travel Experiences",
+  title: "Equatorial Tours and Money Changers Pvt. Ltd",
   description:
-    "Discover curated India and International luxury travel experiences with TourX.",
+    "Trusted currency exchange and money changer in India — live forex rates, buy or sell foreign currency, and curated travel services from Equatorial Tours and Money Changers.",
 };
 
 export default function RootLayout({
