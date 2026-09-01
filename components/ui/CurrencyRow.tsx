@@ -125,6 +125,7 @@ export default function CurrencyRow({
           currency={currency}
           buyRate={buyRate}
           sellRate={sellRate}
+          cardRate={cardRate}
           amount={amount}
           onClose={() => setOpenModal(false)}
         />

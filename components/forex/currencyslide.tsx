@@ -42,11 +42,13 @@ export default function CurrencySlide() {
 
           const buy = inrValue + (markup?.buyMarkup || 0);
           const sell = inrValue - (markup?.sellMarkup || 0);
+          const card = markup?.cardRate || 0;
 
           merged.push({
             name: currency.name,
             buy: buy.toFixed(2),
             sell: sell.toFixed(2),
+            card: card.toFixed(2),
           });
 
         });
@@ -185,6 +187,17 @@ export default function CurrencySlide() {
                   {item.sell}
                 </span>
               </p>
+
+              {Number(item.card) > 0 && (
+
+                <p className="text-sm text-gray-500">
+                  Card
+                  <span className="ml-2 bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium">
+                    {item.card}
+                  </span>
+                </p>
+
+              )}
 
             </div>
 

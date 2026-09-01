@@ -62,6 +62,8 @@ export async function POST(req: Request) {
     const transactionLabel =
       type === "buy"
         ? "Buy Foreign Currency"
+        : type === "card"
+        ? "Forex Card Recharge"
         : "Sell Foreign Currency";
 
     /* =========================
@@ -115,7 +117,7 @@ Transaction: ${transactionLabel}
 From: ${from}
 To: ${to}
 
-Forex Amount: ${amount} ${type === "buy" ? to : from}
+Forex Amount: ${amount} ${type === "sell" ? from : to}
 Rate: ${formattedRate}
 
 Converted Amount: ₹${convertedAmount}

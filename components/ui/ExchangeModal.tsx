@@ -11,6 +11,7 @@ interface Props {
   currency: CurrencyType;
   buyRate: number;
   sellRate: number;
+  cardRate?: number;
   amount: number;
   onClose: () => void;
 }
@@ -19,11 +20,12 @@ export default function ExchangeModal({
   currency,
   buyRate,
   sellRate,
+  cardRate = 0,
   onClose,
 }: Props) {
 
   const [transactionType, setTransactionType] =
-    useState<"buy" | "sell">("buy");
+    useState<"buy" | "sell" | "card">("buy");
 
   const [city, setCity] = useState("");
 
@@ -41,11 +43,17 @@ export default function ExchangeModal({
     address: "",
   });
 
+  /* MOUNT GUARD — createPortal needs `document`, which doesn't
+     exist during SSR. Only render the portal after the component
+     has mounted in the browser. */
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  /* LOCK BACKGROUND SCROLL WHILE MODAL IS OPEN */
 
   useEffect(() => {
 
@@ -58,6 +66,8 @@ export default function ExchangeModal({
 
   }, []);
 
+  /* CLOSE ON ESC */
+
   useEffect(() => {
 
     function handleKey(e: KeyboardEvent) {
@@ -69,19 +79,28 @@ export default function ExchangeModal({
 
   }, [onClose]);
 
+  /* BUY / SELL / CARD LOGIC */
+
   useEffect(() => {
 
     if (transactionType === "buy") {
       setFrom("INR");
       setTo(currency.code);
       setLiveRate(buyRate);
-    } else {
+    } else if (transactionType === "sell") {
       setFrom(currency.code);
       setTo("INR");
       setLiveRate(sellRate);
+    } else {
+      // card — customer pays INR to load this currency onto the card
+      setFrom("INR");
+      setTo(currency.code);
+      setLiveRate(cardRate);
     }
 
-  }, [transactionType, currency.code, buyRate, sellRate]);
+  }, [transactionType, currency.code, buyRate, sellRate, cardRate]);
+
+  /* FORM CHANGE */
 
   const handleChange = (e: any) => {
 
@@ -92,13 +111,17 @@ export default function ExchangeModal({
 
   };
 
-  /* SUBMIT — opens WhatsApp tab immediately on click (before the
-     network call), so the browser never blocks it as a popup. */
+  /* SUBMIT */
 
   const handleSubmit = async (e: any) => {
 
     e.preventDefault();
     setSubmitting(true);
+
+    /* Open a blank tab SYNCHRONOUSLY, right when the user clicks —
+       before any `await`. Browsers only allow window.open() without
+       being blocked when it happens directly inside a click handler.
+       We fill in the real WhatsApp URL once the API responds. */
 
     const whatsappWindow = window.open("", "_blank");
 
@@ -128,8 +151,11 @@ export default function ExchangeModal({
       if (data.success && data.whatsapp) {
 
         if (whatsappWindow) {
+          // reuse the tab we already opened — this one won't be blocked
           whatsappWindow.location.href = data.whatsapp;
         } else {
+          // popup was blocked before we even got a handle to it —
+          // fall back to redirecting the current tab instead
           window.location.href = data.whatsapp;
         }
 
@@ -146,6 +172,8 @@ export default function ExchangeModal({
     }
 
   };
+
+  /* CURRENCY OPTIONS */
 
   const currencyOptions = currencyList
     .filter((c) => c.code !== "INR")
@@ -165,15 +193,26 @@ export default function ExchangeModal({
 
   const modal = (
 
+    /* OUTER OVERLAY — rendered via portal directly under <body>,
+       so it can NEVER be clipped/offset by any parent's
+       overflow-hidden, transform, or positioning. */
+
     <div
       className="fixed inset-0 bg-black/50 z-[9999] overflow-y-auto flex justify-center items-start sm:items-center px-4 py-8"
       onClick={onClose}
     >
 
+      {/* MODAL CARD
+          - max-h-[90vh] + overflow-y-auto so a long form scrolls
+            INSIDE the card instead of pushing content off-screen
+          - onClick stopPropagation so clicking inside doesn't close it */}
+
       <div
         onClick={(e) => e.stopPropagation()}
         className="bg-white rounded-2xl w-full max-w-lg relative flex flex-col max-h-[90vh] shadow-2xl"
       >
+
+        {/* STICKY HEADER */}
 
         <div className="flex items-center justify-between px-6 py-4 border-b sticky top-0 bg-white rounded-t-2xl z-10">
 
@@ -191,14 +230,18 @@ export default function ExchangeModal({
 
         </div>
 
+        {/* SCROLLABLE BODY */}
+
         <div className="overflow-y-auto px-6 py-5">
+
+          {/* BUY / SELL / CARD */}
 
           <div className="flex gap-2 mb-4">
 
             <button
               type="button"
               onClick={() => setTransactionType("buy")}
-              className={`flex-1 py-2 rounded-lg ${
+              className={`flex-1 py-2 rounded-lg text-sm ${
                 transactionType === "buy"
                   ? "bg-blue-600 text-white"
                   : "bg-gray-200"
@@ -210,7 +253,7 @@ export default function ExchangeModal({
             <button
               type="button"
               onClick={() => setTransactionType("sell")}
-              className={`flex-1 py-2 rounded-lg ${
+              className={`flex-1 py-2 rounded-lg text-sm ${
                 transactionType === "sell"
                   ? "bg-blue-600 text-white"
                   : "bg-gray-200"
@@ -219,9 +262,27 @@ export default function ExchangeModal({
               Sell Currency
             </button>
 
+            {cardRate > 0 && (
+
+              <button
+                type="button"
+                onClick={() => setTransactionType("card")}
+                className={`flex-1 py-2 rounded-lg text-sm ${
+                  transactionType === "card"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200"
+                }`}
+              >
+                Forex Card
+              </button>
+
+            )}
+
           </div>
 
           <form id="exchange-form" onSubmit={handleSubmit} className="space-y-4">
+
+            {/* CITY */}
 
             <Select
               options={cities}
@@ -234,6 +295,8 @@ export default function ExchangeModal({
               }}
             />
 
+            {/* NAME */}
+
             <input
               type="text"
               name="name"
@@ -242,6 +305,8 @@ export default function ExchangeModal({
               onChange={handleChange}
               className="w-full border rounded-lg p-3"
             />
+
+            {/* EMAIL */}
 
             <input
               type="email"
@@ -252,6 +317,8 @@ export default function ExchangeModal({
               className="w-full border rounded-lg p-3"
             />
 
+            {/* MOBILE */}
+
             <input
               type="tel"
               name="mobile"
@@ -261,17 +328,15 @@ export default function ExchangeModal({
               className="w-full border rounded-lg p-3"
             />
 
+            {/* CURRENCY SELECT */}
+
             <div className="grid grid-cols-2 gap-3">
+
+              {/* FROM */}
 
               <div>
 
-                {transactionType === "buy" ? (
-
-                  <div className="border p-3 rounded-lg bg-gray-100 text-gray-600">
-                    INR - Indian Rupee
-                  </div>
-
-                ) : (
+                {transactionType === "sell" ? (
 
                   <Select
                     options={currencyOptions}
@@ -286,19 +351,21 @@ export default function ExchangeModal({
                     }}
                   />
 
-                )}
-
-              </div>
-
-              <div>
-
-                {transactionType === "sell" ? (
+                ) : (
 
                   <div className="border p-3 rounded-lg bg-gray-100 text-gray-600">
                     INR - Indian Rupee
                   </div>
 
-                ) : (
+                )}
+
+              </div>
+
+              {/* TO */}
+
+              <div>
+
+                {transactionType === "buy" ? (
 
                   <Select
                     options={currencyOptions}
@@ -313,28 +380,57 @@ export default function ExchangeModal({
                     }}
                   />
 
+                ) : transactionType === "sell" ? (
+
+                  <div className="border p-3 rounded-lg bg-gray-100 text-gray-600">
+                    INR - Indian Rupee
+                  </div>
+
+                ) : (
+
+                  // card — locked to this currency, since the card
+                  // rate shown is specific to it
+                  <div className="border p-3 rounded-lg bg-gray-100 text-gray-600">
+                    {currency.code} - {currency.name}
+                  </div>
+
                 )}
 
               </div>
 
             </div>
 
+            {/* LIVE RATE */}
+
             <div className="bg-gray-100 p-3 rounded-lg text-sm">
 
-              {transactionType === "buy"
-                ? `Live Rate: 1 ${currency.code} = ₹${buyRate.toFixed(2)}`
-                : `Live Rate: 1 ${currency.code} = ₹${sellRate.toFixed(2)}`}
+              {transactionType === "buy" &&
+                `Live Rate: 1 ${currency.code} = ₹${buyRate.toFixed(2)}`}
+
+              {transactionType === "sell" &&
+                `Live Rate: 1 ${currency.code} = ₹${sellRate.toFixed(2)}`}
+
+              {transactionType === "card" &&
+                `Forex Card Rate: 1 ${currency.code} = ₹${cardRate.toFixed(2)}`}
 
             </div>
+
+            {/* AMOUNT */}
 
             <input
               type="number"
               name="amount"
-              placeholder="How Much Forex Amount you want ?"
+              placeholder={
+                transactionType === "card"
+                  ? "How much recharge you want?"
+                  : "How Much Forex Amount you want ?"
+              }
               required
               onChange={handleChange}
               className="w-full border rounded-lg p-3"
             />
+
+            {/* ADDRESS */}
 
             <textarea
               name="address"
@@ -348,6 +444,8 @@ export default function ExchangeModal({
           </form>
 
         </div>
+
+        {/* STICKY FOOTER — submit stays reachable even on tall forms */}
 
         <div className="px-6 py-4 border-t sticky bottom-0 bg-white rounded-b-2xl">
 
