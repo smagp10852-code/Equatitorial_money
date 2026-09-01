@@ -12,7 +12,7 @@ type RatesResponse = {
   success: boolean;
   base: string;
   rates: Record<string, number>;
-  markups?: Record<string, { buyMarkup: number; sellMarkup: number; cardMarkup: number }>;
+  markups?: Record<string, { buyMarkup: number; sellMarkup: number; cardRate: number }>;
   lastUpdated?: string;
 };
 
@@ -22,7 +22,7 @@ export default function CurrencySection() {
   const [amount] = useState(1);
 
   const [rates, setRates] = useState<Record<string, number>>({});
-  const [markups, setMarkups] = useState<Record<string, { buyMarkup: number; sellMarkup: number; cardMarkup: number }>>({});
+  const [markups, setMarkups] = useState<Record<string, { buyMarkup: number; sellMarkup: number; cardRate: number }>>({});
 
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
@@ -157,11 +157,14 @@ export default function CurrencySection() {
 
             const buyMarkup = Number(markup?.buyMarkup ?? 0);
             const sellMarkup = Number(markup?.sellMarkup ?? 0);
-            const cardMarkup = Number(markup?.cardMarkup ?? 0);
 
             const buyRate = inrRate + buyMarkup;
             const sellRate = inrRate - sellMarkup;
-            const cardRate = inrRate + cardMarkup;
+
+            /* Forex Card rate is NOT calculated — it's the exact
+               number set in Sanity, shown as-is. If not set (0),
+               row simply won't show a card rate. */
+            const cardRate = Number(markup?.cardRate ?? 0);
 
             return (
 

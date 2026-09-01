@@ -84,7 +84,7 @@ export const currencyMarkupQuery = `
   currencyCode,
   buyMarkup,
   sellMarkup,
-  cardMarkup
+  cardRate
 }
 `;
 

@@ -46,11 +46,11 @@ export default defineType({
     }),
 
     defineField({
-      name: "cardMarkup",
-      title: "Forex Card Rate (₹ added)",
+      name: "cardRate",
+      title: "Forex Card Rate (₹ — final rate)",
       type: "number",
       description:
-        "Forex Card load karte waqt ka rate — bank/market rate mein ye amount ADD hoga. Cash (Buy) markup se alag rakh sakte ho.",
+        "Yahan jo number daaloge, wahi EXACT rate frontend pe dikhega — koi calculation ya market-rate addition nahi hoga. Isko khud decide karke seedha final rate ki tarah bharo.",
       initialValue: 0,
 
       validation: Rule =>
@@ -72,13 +72,13 @@ export default defineType({
       title: "currencyCode",
       buy: "buyMarkup",
       sell: "sellMarkup",
-      card: "cardMarkup",
+      card: "cardRate",
       active: "isActive"
     },
     prepare({ title, buy, sell, card, active }) {
       return {
         title: `${title || "—"} ${active === false ? "(Inactive)" : ""}`.trim(),
-        subtitle: `We Sell: +₹${buy || 0}   |   We Buy: −₹${sell || 0}   |   Card: +₹${card || 0}`
+        subtitle: `We Sell: +₹${buy || 0}   |   We Buy: −₹${sell || 0}   |   Card: ₹${card || 0}`
       };
     }
   }

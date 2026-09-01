@@ -5,7 +5,7 @@ import { currencyMarkupQuery } from "@/lib/queries";
 type MarkupType = {
   buyMarkup: number;
   sellMarkup: number;
-  cardMarkup: number;
+  cardRate: number;
 };
 
 export async function GET(req: NextRequest) {
@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
         markups[code] = {
           buyMarkup: Number(item.buyMarkup) || 0,
           sellMarkup: Number(item.sellMarkup) || 0,
-          cardMarkup: Number(item.cardMarkup) || 0,
+          cardRate: Number(item.cardRate) || 0,
         };
 
       });
@@ -138,7 +138,7 @@ export async function GET(req: NextRequest) {
 // type MarkupType = {
 //   buyMarkup: number;
 //   sellMarkup: number;
-//   cardMarkup: number;
+//   cardRate: number;
 // };
 
 // export async function GET(req: NextRequest) {
@@ -260,7 +260,7 @@ export async function GET(req: NextRequest) {
 //         markups[code] = {
 //           buyMarkup: Number(item.buyMarkup) || 0,
 //           sellMarkup: Number(item.sellMarkup) || 0,
-//           cardMarkup: Number(item.cardMarkup) || 0,
+//           cardRate: Number(item.cardRate) || 0,
 //         };
 
 //       });
