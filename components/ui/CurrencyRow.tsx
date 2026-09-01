@@ -8,6 +8,7 @@ interface Props {
   currency: CurrencyType;
   buyRate: number;
   sellRate: number;
+  cardRate: number;
   amount?: number; // optional
 }
 
@@ -15,6 +16,7 @@ export default function CurrencyRow({
   currency,
   buyRate,
   sellRate,
+  cardRate,
   amount = 0,
 }: Props) {
 
@@ -24,6 +26,7 @@ export default function CurrencyRow({
 
   const formattedBuy = `₹${buyRate.toFixed(2)}`;
   const formattedSell = `₹${sellRate.toFixed(2)}`;
+  const formattedCard = `₹${cardRate.toFixed(2)}`;
 
   /* MARKET RATE */
 
@@ -35,7 +38,7 @@ export default function CurrencyRow({
 
       <div className="bg-white rounded-2xl px-4 sm:px-6 py-4 shadow-sm hover:shadow-md transition">
 
-        <div className="flex flex-col gap-4 sm:grid sm:grid-cols-4 sm:items-center sm:gap-0">
+        <div className="flex flex-col gap-4 sm:grid sm:grid-cols-5 sm:items-center sm:gap-0">
 
           {/* CURRENCY INFO */}
 
@@ -65,7 +68,7 @@ export default function CurrencyRow({
 
           {/* RATES — side-by-side pair on mobile (with labels since the
               table header is hidden there), plain right-aligned columns
-              on desktop (contents so they slot into the 4-col grid) */}
+              on desktop (contents so they slot into the 5-col grid) */}
 
           <div className="grid grid-cols-2 gap-3 sm:contents">
 
@@ -87,6 +90,15 @@ export default function CurrencyRow({
               </p>
             </div>
 
+          </div>
+
+          {/* FOREX CARD RATE */}
+
+          <div className="bg-blue-50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0 sm:text-right">
+            <p className="text-xs text-gray-400 sm:hidden">Forex Card</p>
+            <p className="font-semibold text-blue-600">
+              {formattedCard}
+            </p>
           </div>
 
           {/* BUTTON */}
