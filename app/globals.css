@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+/* ===================================================== */
+/*               THEME SYSTEM (CLASS BASED)              */
+/* ===================================================== */
+
+/* Default = Light */
+:root {
+  --background: #ffffff;
+  --foreground: #111827;
+}
+
+/* Dark Mode (activated by html.dark) */
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+}
+
+/* Apply variables */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden; /* Important for sliders */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ===================================================== */
+/*                    HERO ZOOM ANIMATION                */
+/* ===================================================== */
+
+@keyframes zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.15);
+  }
+}
+
+.animate-zoom {
+  animation: zoom 8s ease-in-out infinite alternate;
+}
+
+/* ===================================================== */
+/*                INFINITE SCROLL ANIMATIONS             */
+/* ===================================================== */
+
+@keyframes scroll-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scroll-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-scroll-left {
+  animation: scroll-left 45s linear infinite;
+  width: max-content;
+}
+
+.animate-scroll-right {
+  animation: scroll-right 45s linear infinite;
+  width: max-content;
+}
+
+/* Pause on hover */
+.animate-scroll-left:hover,
+.animate-scroll-right:hover {
+  animation-play-state: paused;
+}
+
+/* ===================================================== */
+/*                    DROPDOWN ANIMATION                 */
+/* ===================================================== */
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-in-out;
+}
+
+/* hide scrollbar */
+
+
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

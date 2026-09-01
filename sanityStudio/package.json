@@ -1,0 +1,17 @@
+{
+  "name": "sanitystudio",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sanity Studio for Tour and Travel project",
+  "scripts": {
+    "dev": "sanity dev",
+    "start": "sanity start",
+    "build": "sanity build",
+    "deploy": "sanity deploy"
+  },
+  "dependencies": {
+    "@sanity/vision": "^5.15.0",
+    "sanity": "^5.15.0",
+    "styled-components": "^6.3.11"
+  }
+}
